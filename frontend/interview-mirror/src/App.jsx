@@ -10,6 +10,8 @@ import History from "./pages/History";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 function App() {
   const [page, setPage] = useState("login");
   const [interviewType, setInterviewType] = useState("Technical");
@@ -24,7 +26,7 @@ function App() {
     return;
   }
 
-  fetch("http://localhost:8080/api/interviews", {
+  fetch(`${API_URL}/api/interviews`, {
     headers: {
       Authorization: `Bearer ${token}`
     }
@@ -57,7 +59,7 @@ function App() {
       date: new Date().toLocaleDateString("en-GB")
     };
 
-    fetch("http://localhost:8080/api/interviews", {
+    fetch(`${API_URL}/api/interviews`, {
       method: "POST",
       headers: {
   "Content-Type": "application/json",
