@@ -7,6 +7,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -20,13 +21,15 @@ import java.util.Collections;
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private static final String SECRET =
-            "InterviewMirrorSecretKeyForJwtAuthentication2026VerySecure";
+    private final SecretKey key;
 
-    private final SecretKey key =
-            Keys.hmacShaKeyFor(
-                    SECRET.getBytes(StandardCharsets.UTF_8)
-            );
+    public JwtAuthenticationFilter(
+            @Value("${jwt.secret}") String secret
+    ) {
+        this.key = Keys.hmacShaKeyFor(
+                secret.getBytes(StandardCharsets.UTF_8)
+        );
+    }
 
     @Override
     protected void doFilterInternal(
@@ -37,19 +40,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String authHeader = request.getHeader("Authorization");
 
-        System.out.println(
-                "JWT FILTER: " +
-                request.getMethod() +
-                " " +
-                request.getRequestURI() +
-                " | Authorization header present = " +
-                (authHeader != null)
-        );
-
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-
-            System.out.println("JWT FILTER: No Bearer token");
-
             filterChain.doFilter(request, response);
             return;
         }
@@ -66,10 +57,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             String email = claims.getSubject();
 
-            System.out.println(
-                    "JWT FILTER: Token valid for " + email
-            );
-
             UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(
                             email,
@@ -84,8 +71,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         } catch (Exception e) {
 
             System.out.println(
-                    "JWT FILTER ERROR: " + e.getClass().getSimpleName()
-                    + " - " + e.getMessage()
+                    "JWT FILTER ERROR: "
+                    + e.getClass().getSimpleName()
+                    + " - "
+                    + e.getMessage()
             );
         }
 
