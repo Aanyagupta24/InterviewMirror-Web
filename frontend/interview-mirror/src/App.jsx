@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
+import Dashboard from "./pages/Dashboard";
 import InterviewSelect from "./pages/InterviewSelect";
 import Interview from "./pages/Interview";
 import Result from "./pages/Result";
@@ -63,15 +64,23 @@ function App() {
 
   return (
     <div>
+      
       <Navbar
         onHome={() => setPage("home")}
         onHistory={() => setPage("history")}
-      />
+      />   
 
       {page === "home" && (
-        <Home onStart={() => setPage("select")} />
+        <Home onStart={() => setPage("select")} 
+        onDashboard={() => setPage("dashboard")}
+      />
       )}
-
+      {page === "dashboard" && (
+      <Dashboard
+        history={history}
+        onStart={() => setPage("select")}
+      />
+    )}
       {page === "select" && (
         <InterviewSelect
           onSelect={(type) => {

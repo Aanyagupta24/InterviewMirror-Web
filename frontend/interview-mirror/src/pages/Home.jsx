@@ -1,5 +1,5 @@
-function Home({ onStart }) {
-  return (
+function Home({ onStart, onDashboard }) {
+    return (
     <div className="home">
 
       {/* =========================================
@@ -46,7 +46,12 @@ function Home({ onStart }) {
             >
               How it works ↓
             </button>
-
+            <button
+              className="dashboard-btn"
+              onClick={onDashboard}
+            >
+              View Dashboard →
+            </button>
           </div>
 
           <div className="hero-stats">
