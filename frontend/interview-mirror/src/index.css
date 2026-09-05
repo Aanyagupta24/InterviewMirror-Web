@@ -3385,3 +3385,105 @@ textarea:focus-visible {
     transition-duration: 0.01ms !important;
   }
 }
+/* =========================
+   AUTHENTICATION PAGES
+   ========================= */
+
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 30px 20px;
+  background: #f8f3e8;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 430px;
+  padding: 42px;
+  border-radius: 24px;
+  background: #fffdf8;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.10);
+  text-align: center;
+}
+
+.auth-card h1 {
+  margin-bottom: 10px;
+  font-size: 2.2rem;
+  color: #174f4f;
+}
+
+.auth-card > p {
+  margin-bottom: 28px;
+  color: #666;
+}
+
+.auth-card form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.auth-card input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 14px 16px;
+  border: 1px solid #d8d1c4;
+  border-radius: 12px;
+  background: white;
+  font-size: 1rem;
+  outline: none;
+  transition: 0.25s ease;
+}
+
+.auth-card input:focus {
+  border-color: #174f4f;
+  box-shadow: 0 0 0 3px rgba(23, 79, 79, 0.10);
+}
+
+.auth-card form button {
+  margin-top: 8px;
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
+  background: #174f4f;
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+.auth-card form button:hover {
+  background: #103d3d;
+  transform: translateY(-2px);
+}
+
+.auth-card > p:last-child {
+  margin-top: 24px;
+  margin-bottom: 0;
+}
+
+.auth-card > p:last-child button {
+  border: none;
+  background: none;
+  color: #d96b4c;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: inherit;
+}
+
+.auth-card > p:last-child button:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 500px) {
+  .auth-card {
+    padding: 30px 22px;
+  }
+
+  .auth-card h1 {
+    font-size: 1.8rem;
+  }
+}
