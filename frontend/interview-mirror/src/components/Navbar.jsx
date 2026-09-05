@@ -1,4 +1,4 @@
-function Navbar({ onHome, onHistory }) {
+function Navbar({ onHome, onHistory, onLogout }) {
   return (
     <nav className="navbar">
       <div className="nav-logo" onClick={onHome}>
@@ -11,9 +11,21 @@ function Navbar({ onHome, onHistory }) {
         <button onClick={onHistory}>History</button>
       </div>
 
-      <button className="nav-cta" onClick={() => window.scrollTo(0, 0)}>
-        Get Started
-      </button>
+      <div className="nav-actions">
+        <button
+          className="nav-cta"
+          onClick={() => window.scrollTo(0, 0)}
+        >
+          Get Started
+        </button>
+
+        <button
+          className="logout-btn"
+          onClick={onLogout}
+        >
+          Logout
+        </button>
+      </div>
     </nav>
   );
 }

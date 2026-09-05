@@ -2,8 +2,10 @@ package interview_mirror.controller;
 
 import interview_mirror.model.Interview;
 import interview_mirror.service.InterviewService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -18,12 +20,27 @@ public class InterviewController {
     }
 
     @PostMapping
-    public Interview saveInterview(@RequestBody Interview interview) {
-        return interviewService.saveInterview(interview);
+    public ResponseEntity<Interview> saveInterview(
+            @RequestBody Interview interview,
+            Principal principal) {
+
+        Interview savedInterview =
+                interviewService.saveInterview(
+                        interview,
+                        principal.getName()
+                );
+
+        return ResponseEntity.ok(savedInterview);
     }
 
     @GetMapping
-    public List<Interview> getAllInterviews() {
-        return interviewService.getAllInterviews();
+    public ResponseEntity<List<Interview>> getInterviews(
+            Principal principal) {
+
+        return ResponseEntity.ok(
+                interviewService.getUserInterviews(
+                        principal.getName()
+                )
+        );
     }
 }

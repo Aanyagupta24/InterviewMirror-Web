@@ -15,6 +15,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -23,7 +24,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             "InterviewMirrorSecretKeyForJwtAuthentication2026VerySecure";
 
     private final SecretKey key =
-            Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
+            Keys.hmacShaKeyFor(
+                    SECRET.getBytes(StandardCharsets.UTF_8)
+            );
 
     @Override
     protected void doFilterInternal(
@@ -34,7 +37,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String authHeader = request.getHeader("Authorization");
 
+        System.out.println(
+                "JWT FILTER: " +
+                request.getMethod() +
+                " " +
+                request.getRequestURI() +
+                " | Authorization header present = " +
+                (authHeader != null)
+        );
+
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+
+            System.out.println("JWT FILTER: No Bearer token");
+
             filterChain.doFilter(request, response);
             return;
         }
@@ -51,11 +66,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             String email = claims.getSubject();
 
+            System.out.println(
+                    "JWT FILTER: Token valid for " + email
+            );
+
             UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(
                             email,
                             null,
-                            java.util.Collections.emptyList()
+                            Collections.emptyList()
                     );
 
             SecurityContextHolder
@@ -64,8 +83,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         } catch (Exception e) {
 
-            System.out.println("Invalid JWT token");
-
+            System.out.println(
+                    "JWT FILTER ERROR: " + e.getClass().getSimpleName()
+                    + " - " + e.getMessage()
+            );
         }
 
         filterChain.doFilter(request, response);

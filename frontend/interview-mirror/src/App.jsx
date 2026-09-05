@@ -18,21 +18,37 @@ function App() {
 
   // Load interview history from MySQL through Spring Boot
   useEffect(() => {
-    fetch("http://localhost:8080/api/interviews")
-      .then((response) => response.json())
-      .then((data) => {
-        setHistory(
-          data.map((item) => ({
-            type: item.type,
-            score: `${Math.round((item.score / 5) * 100)}%`,
-            date: item.date
-          }))
-        );
-      })
-      .catch((error) => {
-        console.error("Error loading interview history:", error);
-      });
-  }, []);
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    return;
+  }
+
+  fetch("http://localhost:8080/api/interviews", {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`History request failed: ${response.status}`);
+      }
+
+      return response.json();
+    })
+    .then((data) => {
+      setHistory(
+        data.map((item) => ({
+          type: item.type,
+          score: `${Math.round((item.score / 5) * 100)}%`,
+          date: item.date
+        }))
+      );
+    })
+    .catch((error) => {
+      console.error("Error loading interview history:", error);
+    });
+}, [page]);
 
   const saveInterview = (finalScore) => {
     const newInterview = {
@@ -44,8 +60,9 @@ function App() {
     fetch("http://localhost:8080/api/interviews", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
-      },
+  "Content-Type": "application/json",
+  Authorization: `Bearer ${localStorage.getItem("token")}`
+},
       body: JSON.stringify(newInterview)
     })
       .then((response) => response.json())
@@ -75,16 +92,19 @@ function App() {
       {page === "signup" && (
         <Signup
           onLogin={() => setPage("login")}
-          onSignupSuccess={() => setPage("home")}
+          onSignupSuccess={() => setPage("login")}
         />
       )}
 
-      {page !== "signup" && (
+      {page !== "signup" && page !== "login" && (
         <>
-          <Navbar
-            onHome={() => setPage("home")}
-            onHistory={() => setPage("history")}
-          />
+          <Navbar 
+          onHome={() => setPage("home")}
+          onHistory={() => setPage("history")} 
+          onLogout={() => { 
+            localStorage.removeItem("token"); localStorage.removeItem("userName"); localStorage.removeItem("userEmail"); setPage("login"); 
+            }}
+           />
 
           {page === "home" && (
             <Home

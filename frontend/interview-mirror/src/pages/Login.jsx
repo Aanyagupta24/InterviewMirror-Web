@@ -6,42 +6,54 @@ function Login({ onSignup, onLoginSuccess }) {
   const [message, setMessage] = useState("");
 
   const handleLogin = async (e) => {
-    e.preventDefault();
-    setMessage("");
+  e.preventDefault();
+  setMessage("");
 
-    try {
-      const response = await fetch("http://localhost:8080/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          email,
-          password
-        })
-      });
+  try {
+    const response = await fetch("http://localhost:8080/api/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        email,
+        password
+      })
+    });
 
-      const data = await response.text();
+    const data = await response.text();
 
-      if (response.ok) {
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("userName", data.name);
-        localStorage.setItem("userEmail", data.email);
+    console.log("LOGIN RESPONSE:", data);
 
-        setMessage("Login successful!");
+    if (response.ok) {
+      const result = JSON.parse(data);
 
-        setTimeout(() => {
-          onLoginSuccess();
-        }, 500);
-      } else {
-        setMessage(data || "Invalid email or password.");
-      }
+      console.log("TOKEN RECEIVED:", result.token ? "YES" : "NO");
 
-    } catch (error) {
-      console.error(error);
-      setMessage("Unable to connect to server.");
+      localStorage.setItem("token", result.token);
+      localStorage.setItem("userName", result.name);
+      localStorage.setItem("userEmail", result.email);
+
+      console.log(
+        "TOKEN STORED:",
+        localStorage.getItem("token") ? "YES" : "NO"
+      );
+
+      setMessage("Login successful!");
+
+      setTimeout(() => {
+        onLoginSuccess();
+      }, 500);
+
+    } else {
+      setMessage(data || "Invalid email or password.");
     }
-  };
+
+  } catch (error) {
+    console.error(error);
+    setMessage("Unable to connect to server.");
+  }
+};
 
   return (
     <div className="auth-page">

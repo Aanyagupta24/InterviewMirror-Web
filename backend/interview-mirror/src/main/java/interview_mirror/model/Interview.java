@@ -1,9 +1,6 @@
 package interview_mirror.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 @Entity
 public class Interview {
@@ -15,6 +12,10 @@ public class Interview {
     private String type;
     private int score;
     private String date;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     public Interview() {
     }
@@ -51,5 +52,13 @@ public class Interview {
 
     public void setDate(String date) {
         this.date = date;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }
