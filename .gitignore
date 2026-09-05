@@ -1,0 +1,21 @@
+# Frontend dependencies and build files
+frontend/**/node_modules/
+frontend/**/dist/
+
+# Java / Spring Boot
+backend/**/target/
+backend/**/*.class
+
+# Secrets and environment files
+.env
+.env.*
+**/.env
+**/.env.*
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
