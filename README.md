@@ -1,52 +1,116 @@
-# InterviewMirror
+# InterviewMirror 🎯
 
-A full-stack web-based mock interview platform designed to help students practice interviews, evaluate their answers, and track their performance over multiple attempts.
+**InterviewMirror** is a full-stack web-based mock interview platform designed to help students practice interviews, evaluate their answers, and track their performance over multiple attempts.
 
-## Overview
+It provides a realistic interview-practice experience with multiple interview categories, automatic scoring, secure user authentication, and personalized interview history.
 
-InterviewMirror provides a simple and interactive environment for conducting mock interviews in different categories. Users can select an interview type, answer a series of questions, receive an automatically calculated score, and view their previous interview attempts.
+---
 
-The project follows a three-layer architecture:
+## ✨ Features
 
-**React Frontend → Spring Boot REST API → MySQL Database**
+* 🔐 **User Authentication**
 
-## Features
+  * User registration and login
+  * Password encryption using BCrypt
+  * JWT-based authentication
+  * Protected interview history
 
-* Multiple interview categories
+* 🎤 **Mock Interviews**
 
-  * HR
-  * Technical
-  * JavaScript
-* Interactive question-and-answer interface
-* Keyword-based answer evaluation
-* Automatic interview score calculation
-* Performance result page
-* Persistent interview history
-* REST API for storing and retrieving results
-* MySQL database integration
-* Responsive and modern user interface
+  * HR interviews
+  * Technical interviews
+  * JavaScript interviews
+  * Randomized questions for every interview
 
-## Technologies Used
+* 📝 **Answer Evaluation**
+
+  * Keyword-based answer evaluation
+  * Automatic score calculation
+  * Score displayed after interview completion
+
+* 📊 **Performance Tracking**
+
+  * Total interviews attempted
+  * Average score
+  * Best score
+  * Recent interview history
+  * Personalized dashboard
+
+* 💾 **Persistent Data**
+
+  * Interview results stored in MySQL
+  * Interview history associated with individual users
+
+* 🎨 **Modern UI**
+
+  * Responsive design
+  * Clean and interactive interface
+  * Mobile-friendly layout
+
+---
+
+## 🏗️ Architecture
+
+InterviewMirror follows a three-layer full-stack architecture:
+
+```text
+React Frontend
+      ↓
+Spring Boot REST API
+      ↓
+MySQL Database
+```
+
+Authentication works through JWT:
+
+```text
+User Login
+    ↓
+Spring Boot Authentication
+    ↓
+JWT Token
+    ↓
+Frontend stores token
+    ↓
+Protected API Requests
+    ↓
+Spring Boot JWT Filter
+    ↓
+User-specific Data
+```
+
+---
+
+## 🛠️ Technologies Used
 
 ### Frontend
 
 * React
 * JavaScript
-* HTML
-* CSS
+* HTML5
+* CSS3
 * Vite
 
 ### Backend
 
-* Java
+* Java 21
 * Spring Boot
 * Spring Web
+* Spring Security
 * Spring Data JPA
 * Maven
+* JWT (JSON Web Token)
 
 ### Database
 
 * MySQL
+
+### Security
+
+* BCrypt password hashing
+* JWT-based authentication
+* Protected REST API endpoints
+* Environment variables for sensitive configuration
 
 ### Development Tools
 
@@ -55,7 +119,9 @@ The project follows a three-layer architecture:
 * Git
 * GitHub
 
-## Project Structure
+---
+
+## 📁 Project Structure
 
 ```text
 InterviewMirror/
@@ -70,6 +136,9 @@ InterviewMirror/
 │       │       │       ├── model/
 │       │       │       ├── repository/
 │       │       │       ├── service/
+│       │       │       ├── JwtService.java
+│       │       │       ├── JwtAuthenticationFilter.java
+│       │       │       ├── SecurityConfig.java
 │       │       │       └── InterviewMirrorApplication.java
 │       │       │
 │       │       └── resources/
@@ -82,7 +151,9 @@ InterviewMirror/
 │       ├── src/
 │       │   ├── components/
 │       │   ├── pages/
-│       │   └── data/
+│       │   ├── data/
+│       │   ├── App.jsx
+│       │   └── index.css
 │       ├── package.json
 │       └── vite.config.js
 │
@@ -91,44 +162,78 @@ InterviewMirror/
 └── README.md
 ```
 
-## Database
+---
 
-The application uses a MySQL database named `interviewmirror`.
+## 🗄️ Database
 
-The main `interview` table stores:
+InterviewMirror uses **MySQL** for persistent data storage.
+
+The application contains user and interview-related data.
+
+### User information
+
+The `users` table stores:
+
+* User ID
+* Name
+* Email
+* Encrypted password
+
+Passwords are never stored as plain text. They are encrypted using BCrypt before being saved.
+
+### Interview information
+
+The `interview` table stores:
 
 * Interview ID
 * Interview type
 * Score
 * Interview date
+* Associated user
 
-Example:
+Each interview record is linked to the user who completed it.
 
-```text
-+----+------------+-------+-----------+
-| id | date       | score | type      |
-+----+------------+-------+-----------+
-| 1  | 05/09/2026 | 4     | Technical |
-+----+------------+-------+-----------+
+---
+
+## 🔌 REST API
+
+### Authentication
+
+#### Register
+
+```http
+POST /api/auth/signup
 ```
 
-## REST API
+Creates a new user account.
 
-### Get Interview History
+#### Login
+
+```http
+POST /api/auth/login
+```
+
+Authenticates a user and returns a JWT token.
+
+---
+
+### Interviews
+
+#### Get Interview History
 
 ```http
 GET /api/interviews
 ```
 
-Retrieves all previously stored interview attempts.
+Returns the authenticated user's interview history.
 
-### Save Interview Result
+#### Save Interview Result
 
 ```http
 POST /api/interviews
 ```
 
-Stores a completed interview result in the database.
+Stores the completed interview result for the authenticated user.
 
 Example request:
 
@@ -140,11 +245,56 @@ Example request:
 }
 ```
 
-## How to Run the Project
+Protected interview endpoints require a JWT:
+
+```http
+Authorization: Bearer <token>
+```
+
+---
+
+## 🔐 Authentication & Security
+
+InterviewMirror implements authentication using **Spring Security and JWT**.
+
+The authentication flow is:
+
+```text
+Signup
+   ↓
+Password hashed using BCrypt
+   ↓
+User stored in MySQL
+
+Login
+   ↓
+Credentials verified
+   ↓
+JWT token generated
+   ↓
+Token stored by frontend
+   ↓
+Token sent with protected requests
+   ↓
+JWT Authentication Filter validates token
+   ↓
+User-specific resources accessed
+```
+
+Sensitive values such as:
+
+* Database passwords
+* JWT secrets
+
+are stored using **environment variables** rather than being committed to the repository.
+
+---
+
+## ▶️ How to Run Locally
 
 ### Prerequisites
 
-Make sure the following are installed:
+Install the following:
 
 * Java 21 or later
 * Maven
@@ -152,34 +302,62 @@ Make sure the following are installed:
 * MySQL
 * Git
 
-### 1. Set up the database
+---
 
-Create the database in MySQL:
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/Aanyagupta24/InterviewMirror-Web.git
+```
+
+```bash
+cd InterviewMirror-Web
+```
+
+---
+
+### 2. Set Up MySQL
+
+Create a database:
 
 ```sql
 CREATE DATABASE interviewmirror;
 ```
 
-The Spring Boot application will create/update the required table automatically.
+The Spring Boot application uses JPA/Hibernate to create and update the required tables automatically.
 
-### 2. Configure the database password
+---
 
-The backend uses an environment variable for the MySQL password.
+### 3. Configure Environment Variables
+
+The backend uses environment variables for sensitive configuration.
 
 In PowerShell:
 
 ```powershell
+$env:DB_HOST="localhost"
+$env:DB_PORT="3306"
+$env:DB_NAME="interviewmirror"
+$env:DB_USERNAME="root"
 $env:DB_PASSWORD="YOUR_MYSQL_PASSWORD"
+$env:JWT_SECRET="YOUR_SECURE_JWT_SECRET"
 ```
 
-Do not commit your actual database password to GitHub.
+**Never commit actual passwords or JWT secrets to GitHub.**
 
-### 3. Start the backend
+---
+
+### 4. Start the Backend
 
 Open PowerShell:
 
 ```powershell
-cd C:\InterviewMirror\backend\interview-mirror
+cd backend\interview-mirror
+```
+
+Then run:
+
+```powershell
 .\mvnw.cmd spring-boot:run
 ```
 
@@ -189,63 +367,123 @@ The backend runs on:
 http://localhost:8080
 ```
 
-### 4. Start the frontend
+---
 
-Open another PowerShell window:
+### 5. Start the Frontend
+
+Open another terminal:
 
 ```powershell
-cd C:\InterviewMirror\frontend\interview-mirror
+cd frontend\interview-mirror
+```
+
+Install dependencies:
+
+```powershell
 npm install
+```
+
+Start the development server:
+
+```powershell
 npm run dev
 ```
 
-The frontend will normally run on:
+The frontend normally runs on:
 
 ```text
 http://localhost:5173
 ```
 
-## Application Flow
+---
+
+## 🔄 Application Flow
 
 ```text
-Home Page
-    ↓
+Login / Sign Up
+       ↓
+     Home
+       ↓
 Select Interview Type
-    ↓
+       ↓
+Random Interview Questions
+       ↓
 Answer Questions
-    ↓
+       ↓
 Keyword-Based Evaluation
-    ↓
+       ↓
 Calculate Score
-    ↓
+       ↓
 Display Result
-    ↓
-Save Result
-    ↓
-View Interview History
+       ↓
+Save Result to MySQL
+       ↓
+View Personalized History
 ```
 
-## Evaluation Method
+---
 
-InterviewMirror currently uses a keyword-based evaluation approach.
+## 🧠 Evaluation Method
 
-Each question contains a predefined set of relevant keywords. The user's answer is compared against these keywords, and the number of matching keywords contributes to the interview score.
+InterviewMirror currently uses a **keyword-based evaluation approach**.
 
-This approach provides a simple and understandable evaluation mechanism suitable for a web-based mock interview system.
+Each question contains a predefined set of relevant keywords. The user's answer is compared against these keywords, and the number of matching keywords contributes to the final score.
 
-## Future Enhancements
+This approach provides a simple, transparent, and understandable evaluation mechanism for the current version of the application.
 
-Possible future improvements include:
+---
 
-* More interview categories and questions
-* Detailed performance analytics
-* Improved answer evaluation
-* User profiles
-* Authentication and authorization
-* Interview difficulty levels
-* Graphical performance reports
-* More advanced feedback mechanisms
+## 🚀 Future Enhancements
 
-## Author
+Planned improvements include:
 
-Developed as a full-stack academic project using React, Java Spring Boot, and MySQL.
+* 🤖 AI-powered answer evaluation
+* 💬 Detailed AI-generated feedback
+* 🎙️ Voice-based interviews
+* 📹 Webcam-based interview analysis
+* 📈 Advanced performance analytics
+* 🎚️ Interview difficulty levels
+* 📚 Larger question bank
+* 🏆 Performance-based recommendations
+* 📊 Graphical progress reports
+* 👤 Enhanced user profiles
+* ⏱️ Timed interview sessions
+
+---
+
+## 🌐 Deployment
+
+The application is being prepared for cloud deployment with:
+
+* **React frontend**
+* **Spring Boot backend**
+* **Cloud-hosted MySQL database**
+
+Deployment configuration uses environment variables to keep sensitive credentials secure.
+
+---
+
+## 🎯 Project Objective
+
+The main objective of InterviewMirror is to provide students with an accessible platform where they can repeatedly practice interviews, identify areas for improvement, and monitor their progress over time.
+
+The project also demonstrates the implementation of a complete full-stack application with frontend development, REST APIs, database integration, authentication, authorization, and cloud deployment.
+
+---
+
+## 👩‍💻 Author
+
+**Aanya Gupta**
+
+B.Tech Computer Science & Engineering
+
+Developed as a full-stack academic and portfolio project using **React, Java Spring Boot, Spring Security, JWT, and MySQL**.
+
+---
+
+## ⭐ Repository
+
+If you find this project useful, consider giving the repository a ⭐ on GitHub.
+
+**GitHub:**
+https://github.com/Aanyagupta24/InterviewMirror-Web
